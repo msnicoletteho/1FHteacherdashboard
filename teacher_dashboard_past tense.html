@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Analytics Dashboard - Past Tense Verbs (MOE P1)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brandPurple: '#7c3aed',
+                        brandPink: '#ec4899',
+                        brandYellow: '#f59e0b',
+                        brandGreen: '#10b981',
+                        brandBlue: '#3b82f6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-fun { font-family: 'Fredoka', cursive, sans-serif; }
+        .bubbly-card {
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col">
+
+    <script>
+        // INTERNAL CONFIGURATION: Paste the exact same Google Apps Script Web App URL below
+        const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwveSVdgLuxr7d8vSRIg2Kqcdler3CB_cp2FIrwfeFazFFNWhHzhtmpIvsdXm3tBDr6tA/exec";
+    </script>
+
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 px-6 py-4 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 bg-purple-700 text-white rounded-2xl flex items-center justify-center font-fun text-2xl shadow-md">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <div>
+                    <h1 class="font-fun font-bold text-xl text-purple-900 leading-tight">Teacher Analytics Dashboard</h1>
+                    <p class="text-xs text-slate-500">Singapore MOE Primary 1 English Language - Past Tense Verbs</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <button onclick="fetchStudentData()" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-fun font-bold text-sm rounded-xl shadow transition flex items-center">
+                    <i class="fa-solid fa-rotate mr-2"></i> Refresh Live Data
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-8 space-y-8">
+
+        <!-- Analytics KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="bg-white bubbly-card p-6 border-2 border-purple-100">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Submissions</span>
+                    <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
+                <div class="text-3xl font-fun font-bold text-purple-900" id="totalSubmissionsCount">0</div>
+                <p class="text-xs text-slate-500 mt-1">Students completed quests</p>
+            </div>
+
+            <div class="bg-white bubbly-card p-6 border-2 border-indigo-100">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Class Average Score</span>
+                    <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+                <div class="text-3xl font-fun font-bold text-indigo-900" id="averageScoreDisplay">0 pts</div>
+                <p class="text-xs text-slate-500 mt-1">Across all difficulty tiers</p>
+            </div>
+
+            <div class="bg-white bubbly-card p-6 border-2 border-pink-100">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Top Mastery Level</span>
+                    <div class="w-10 h-10 bg-pink-100 text-pink-600 rounded-xl flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                </div>
+                <div class="text-3xl font-fun font-bold text-pink-700 capitalize" id="topDifficultyDisplay">Medium</div>
+                <p class="text-xs text-slate-500 mt-1">Most popular tier chosen</p>
+            </div>
+
+            <div class="bg-white bubbly-card p-6 border-2 border-amber-100">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Common Misconception</span>
+                    <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+                </div>
+                <div class="text-lg font-fun font-bold text-amber-800 truncate" id="topMisconceptionDisplay">Double Consonant</div>
+                <p class="text-xs text-slate-500 mt-1">Area requiring re-teaching</p>
+            </div>
+        </div>
+
+        <!-- Leaderboard & Analytics Table -->
+        <div class="bg-white bubbly-card p-6 md:p-8 border-2 border-slate-100">
+            <div class="flex flex-wrap items-center justify-between mb-6 gap-4">
+                <div>
+                    <h3 class="font-fun font-bold text-2xl text-slate-800">Student Score Leaderboard & Logs</h3>
+                    <p class="text-sm text-slate-500">Real-time telemetry synced directly from student practice sessions.</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Search student name..." class="px-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-purple-500">
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b-2 border-slate-100 text-xs font-bold uppercase text-slate-400">
+                            <th class="py-3 px-4">Timestamp</th>
+                            <th class="py-3 px-4">Student Name</th>
+                            <th class="py-3 px-4">Class</th>
+                            <th class="py-3 px-4">Score</th>
+                            <th class="py-3 px-4">Tier Level</th>
+                            <th class="py-3 px-4">Common Mistakes Noted</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardTableBody">
+                        <tr class="border-b border-slate-50">
+                            <td colspan="6" class="py-8 text-center text-slate-400 text-sm">
+                                <i class="fa-solid fa-spinner fa-spin mr-2"></i> Connecting to Google Sheet database... (If URL is default, click below to load demo data)
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Demo Load Button if URL is default -->
+            <div id="demoLoadContainer" class="mt-6 text-center">
+                <button onclick="loadDemoData()" class="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-fun font-bold text-xs rounded-xl transition">
+                    <i class="fa-solid fa-database mr-2"></i> Load Sample Class Data for Preview
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        let allRecords = [];
+
+        function fetchStudentData() {
+            if (GOOGLE_APPS_SCRIPT_URL.includes("PASTE_YOUR")) {
+                loadDemoData();
+                return;
+            }
+
+            fetch(GOOGLE_APPS_SCRIPT_URL)
+                .then(res => res.json())
+                .then(data => {
+                    allRecords = data;
+                    renderDashboard(allRecords);
+                })
+                .catch(err => {
+                    console.error("Error fetching sheet data:", err);
+                    loadDemoData();
+                });
+        }
+
+        function loadDemoData() {
+            allRecords = [
+                { Timestamp: "8/6/2026, 14:15:22", StudentName: "Lim Wei Ming", Class: "1-A", Score: 100, Level: "challenge", CommonMistakes: "None" },
+                { Timestamp: "8/6/2026, 14:18:40", StudentName: "Siti Nurul", Class: "1-A", Score: 80, Level: "medium", CommonMistakes: "Double Consonant" },
+                { Timestamp: "8/6/2026, 14:22:10", StudentName: "Tan Jia Hui", Class: "1-B", Score: 60, Level: "easy", CommonMistakes: "Change y to -ied" },
+                { Timestamp: "8/6/2026, 14:25:05", StudentName: "Arjun Kumar", Class: "1-A", Score: 100, Level: "challenge", CommonMistakes: "None" },
+                { Timestamp: "8/6/2026, 14:30.12", StudentName: "Chloe Tan", Class: "1-B", Score: 80, Level: "medium", CommonMistakes: "Irregular Verbs" }
+            ];
+            renderDashboard(allRecords);
+        }
+
+        function renderDashboard(records) {
+            const tbody = document.getElementById('leaderboardTableBody');
+            tbody.innerHTML = '';
+
+            if (records.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400 text-sm">No submissions recorded yet.</td></tr>`;
+                return;
+            }
+
+            let totalScore = 0;
+            let mistakesMap = {};
+
+            records.forEach(rec => {
+                totalScore += Number(rec.Score || 0);
+                if (rec.CommonMistakes && rec.CommonMistakes !== "None") {
+                    mistakesMap[rec.CommonMistakes] = (mistakesMap[rec.CommonMistakes] || 0) + 1;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-50 hover:bg-slate-50/50 transition";
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-xs text-slate-500">${rec.Timestamp}</td>
+                    <td class="py-3 px-4 font-semibold text-slate-800">${rec.StudentName}</td>
+                    <td class="py-3 px-4"><span class="px-2 py-0.5 bg-purple-50 text-purple-700 rounded-lg text-xs font-bold">${rec.Class}</span></td>
+                    <td class="py-3 px-4 font-fun font-bold text-pink-600">${rec.Score} pts</td>
+                    <td class="py-3 px-4"><span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-bold capitalize">${rec.Level}</span></td>
+                    <td class="py-3 px-4 text-xs text-slate-600">${rec.CommonMistakes}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Update KPIs
+            document.getElementById('totalSubmissionsCount').textContent = records.length;
+            const avg = Math.round(totalScore / records.length);
+            document.getElementById('averageScoreDisplay').textContent = `${avg} pts`;
+
+            let topMistake = "None detected";
+            let maxCount = 0;
+            for (let m in mistakesMap) {
+                if (mistakesMap[m] > maxCount) {
+                    maxCount = mistakesMap[m];
+                    topMistake = m;
+                }
+            }
+            document.getElementById('topMisconceptionDisplay').textContent = topMistake;
+        }
+
+        function filterTable() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allRecords.filter(r => r.StudentName.toLowerCase().includes(query) || r.Class.toLowerCase().includes(query));
+            renderDashboard(filtered);
+        }
+
+        window.onload = function() {
+            fetchStudentData();
+        };
+    </script>
+</body>
+</html>
